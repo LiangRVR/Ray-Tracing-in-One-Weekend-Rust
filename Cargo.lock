@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "Ray-Tracing-in-One-Weekend"
+name = "ray-tracing-in-one-weekend"
 version = "0.1.0"

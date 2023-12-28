@@ -1,22 +1,18 @@
-use utils::{ color::Color, vec3::Point3, vec3::Vec3, ray::Ray };
+use std::rc::Rc;
+use utils::{
+    color::Color,
+    vec3::Point3,
+    vec3::Vec3,
+    ray::Ray,
+    hittable::{ HitRecord, Hittable, HittableList },
+    constants::INFINITY,
+    sphere::Sphere,
+};
 
-pub fn hit_sphere(center: &Point3, radius: f64, r: &Ray) -> f64 {
-    let oc = r.origin() - *center;
-    let a = r.direction().lengt_squared();
-    let half_b = oc.dot(r.direction());
-    let c = oc.lengt_squared() - radius * radius;
-    let discriminant = half_b * half_b - a * c;
-    if discriminant < 0.0 {
-        return -1.0;
-    }
-    (-half_b - discriminant.sqrt()) / a
-}
-
-pub fn ray_color(r: &Ray) -> Color {
-    let t = hit_sphere(&Point3::new(0.0, 0.0, -1.0), 0.5, r);
-    if t > 0.0 {
-        let normal = (r.at(t) - Vec3::new(0.0, 0.0, -1.0)).unit_vector();
-        return 0.5 * Color::new(normal.x() + 1.0, normal.y() + 1.0, normal.z() + 1.0);
+pub fn ray_color(r: &Ray, world: &dyn Hittable) -> Color {
+    let mut rec = HitRecord::new();
+    if world.hit(r, 0.0, INFINITY, &mut rec) {
+        return 0.5 * (rec.normal + Color::new(1.0, 1.0, 1.0));
     }
 
     let unit_direction = r.direction().unit_vector();
@@ -32,6 +28,11 @@ fn main() {
     //Calculate the image height, and ensure that it's at least 1.
     let mut image_height = ((image_width as f64) / aspect_ratio) as i32;
     image_height = image_height.max(1);
+
+    //World
+    let mut world = HittableList::new();
+    world.add(Rc::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)));
+    world.add(Rc::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
 
     // Camera
     let focal_length: f64 = 1.0;
@@ -63,7 +64,7 @@ fn main() {
             let ray_direction = pixer_center - camera_center;
             let r = Ray::new(camera_center, ray_direction);
 
-            let pixel_color = ray_color(&r);
+            let pixel_color = ray_color(&r, &world);
             pixel_color.write_color();
         }
     }

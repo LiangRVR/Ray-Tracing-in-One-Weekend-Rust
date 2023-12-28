@@ -2,18 +2,18 @@ use utils::{ color::Color, vec3::Point3, vec3::Vec3, ray::Ray };
 
 pub fn hit_sphere(center: &Point3, radius: f64, r: &Ray) -> f64 {
     let oc = r.origin() - *center;
-    let a = r.direction().dot(r.direction());
-    let b = 2.0 * oc.dot(r.direction());
-    let c = oc.dot(oc) - radius * radius;
-    let discriminant = b * b - 4.0 * a * c;
+    let a = r.direction().lengt_squared();
+    let half_b = oc.dot(r.direction());
+    let c = oc.lengt_squared() - radius * radius;
+    let discriminant = half_b * half_b - a * c;
     if discriminant < 0.0 {
         return -1.0;
     }
-    (-b - discriminant.sqrt()) / (2.0 * a)
+    (-half_b - discriminant.sqrt()) / a
 }
 
 pub fn ray_color(r: &Ray) -> Color {
-    let t  = hit_sphere(&Point3::new(0.0, 0.0, -1.0), 0.5, r);
+    let t = hit_sphere(&Point3::new(0.0, 0.0, -1.0), 0.5, r);
     if t > 0.0 {
         let normal = (r.at(t) - Vec3::new(0.0, 0.0, -1.0)).unit_vector();
         return 0.5 * Color::new(normal.x() + 1.0, normal.y() + 1.0, normal.z() + 1.0);
@@ -54,8 +54,9 @@ fn main() {
 
     // Render
     println!("P3\n{} {}\n255", image_width, image_height);
+
     for j in 0..image_height {
-        eprintln!("Scanlines remaining: {}", image_height - j);
+        eprintln!("Scanlines remaining {}", image_height - j);
         for i in 0..image_width {
             let pixer_center =
                 pixel00_loc + (i as f64) * pixel_delta_u + (j as f64) * pixel_delta_v;

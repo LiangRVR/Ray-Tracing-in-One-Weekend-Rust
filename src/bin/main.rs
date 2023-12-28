@@ -7,11 +7,13 @@ use utils::{
     hittable::{ HitRecord, Hittable, HittableList },
     constants::INFINITY,
     sphere::Sphere,
+    interval::Interval,
 };
 
 pub fn ray_color(r: &Ray, world: &dyn Hittable) -> Color {
     let mut rec = HitRecord::new();
-    if world.hit(r, 0.0, INFINITY, &mut rec) {
+    let world_interval = Interval { min: 0.0, max: INFINITY };
+    if world.hit(r, &world_interval, &mut rec) {
         return 0.5 * (rec.normal + Color::new(1.0, 1.0, 1.0));
     }
 

@@ -77,7 +77,7 @@ impl Vec3 {
         Self::random_in_unit_sphere().unit_vector()
     }
 
-    pub fn random_in_hemisphere(normal: &Vec3) -> Self {
+    pub fn random_on_hemisphere(normal: &Vec3) -> Self {
         let on_unit_sphere = Self::random_unit_vector();
         if on_unit_sphere.dot(*normal) > 0.0 {
             on_unit_sphere

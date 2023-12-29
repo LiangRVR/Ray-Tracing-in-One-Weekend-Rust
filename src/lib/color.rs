@@ -16,6 +16,11 @@ impl Color {
         g *= scale;
         b *= scale;
 
+        // Apply the linear to gamma transform.
+        r = Color::linear_to_gamma(r);
+        g = Color::linear_to_gamma(g);
+        b = Color::linear_to_gamma(b);
+
         let intensity = Interval::new(0.000, 0.999);
 
         let ir = (256.000 * intensity.clamp(r)) as i32;
@@ -23,5 +28,9 @@ impl Color {
         let ib = (256.000 * intensity.clamp(b)) as i32;
 
         println!("{} {} {}", ir, ig, ib);
+    }
+
+    fn linear_to_gamma(x: f64) -> f64 {
+        x.sqrt()
     }
 }

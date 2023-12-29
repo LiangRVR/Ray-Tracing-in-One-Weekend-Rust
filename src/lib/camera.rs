@@ -2,7 +2,7 @@ use crate::{
     hittable::{ Hittable, HitRecord },
     ray::Ray,
     interval::Interval,
-    constants::INFINITY,
+    utils::INFINITY,
     color::Color,
     vec3::{ Point3, Vec3 },
 };

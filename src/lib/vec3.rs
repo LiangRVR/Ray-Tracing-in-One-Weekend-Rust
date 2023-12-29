@@ -1,13 +1,14 @@
-use std::ops::{ Index, IndexMut, Neg, Sub, AddAssign, Add, Mul, MulAssign,Div ,DivAssign };
+use std::ops::{ Index, IndexMut, Neg, Sub, AddAssign, Add, Mul, MulAssign, Div, DivAssign };
 use std::fmt;
+
+use crate::utils::{ random_double, random_double_range };
 
 #[derive(Copy, Clone, Default)]
 pub struct Vec3 {
     e: [f64; 3],
 }
 
-pub type  Point3 = Vec3;
-
+pub type Point3 = Vec3;
 
 //Native operations
 impl Vec3 {
@@ -45,6 +46,44 @@ impl Vec3 {
     }
     pub fn unit_vector(&self) -> Self {
         *self / self.length()
+    }
+
+    pub fn random() -> Self {
+        Self {
+            e: [random_double(), random_double(), random_double()],
+        }
+    }
+
+    pub fn random_range(min: f64, max: f64) -> Self {
+        Self {
+            e: [
+                random_double_range(min, max),
+                random_double_range(min, max),
+                random_double_range(min, max),
+            ],
+        }
+    }
+
+    pub fn random_in_unit_sphere() -> Self {
+        loop {
+            let p = Self::random_range(-1.0, 1.0);
+            if p.lengt_squared() < 1.0 {
+                return p;
+            }
+        }
+    }
+
+    pub fn random_unit_vector() -> Self {
+        Self::random_in_unit_sphere().unit_vector()
+    }
+
+    pub fn random_in_hemisphere(normal: &Vec3) -> Self {
+        let on_unit_sphere = Self::random_unit_vector();
+        if on_unit_sphere.dot(*normal) > 0.0 {
+            on_unit_sphere
+        } else {
+            -on_unit_sphere
+        }
     }
 }
 
@@ -114,11 +153,7 @@ impl Mul for Vec3 {
 
     fn mul(self, rhs: Vec3) -> Vec3 {
         Vec3 {
-            e: [
-                self.e[0] * rhs.e[0],
-                self.e[1] * rhs.e[1],
-                self.e[2] * rhs.e[2],
-            ],
+            e: [self.e[0] * rhs.e[0], self.e[1] * rhs.e[1], self.e[2] * rhs.e[2]],
         }
     }
 }

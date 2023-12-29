@@ -92,7 +92,7 @@ impl Camera {
             return Color::new(0.0, 0.0, 0.0);
         }
 
-        let world_interval = Interval { min: 0.0, max: INFINITY };
+        let world_interval = Interval { min: 0.001, max: INFINITY };
         if world.hit(r, &world_interval, &mut rec) {
             let direction = Vec3::random_on_hemisphere(&rec.normal);
             let ray_on_random_direction = Ray::new(rec.p, direction);

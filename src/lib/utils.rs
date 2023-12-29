@@ -5,3 +5,4 @@ pub mod hittable;
 pub mod sphere;
 pub mod constants;
 pub mod interval;
+pub mod camera;
